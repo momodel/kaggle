@@ -1509,6 +1509,8 @@ class KaggleApi(KaggleApi):
                     download_size = download_size + len(data)	
                     socketio.emit('download_progress', {'add': download_size, 'total': size},
                                   namespace=f'/kaggle/{dataset_path}')
+                    params = {"dataset_id": f'{dataset_id}', "kaggle_downloading_size": f'{download_size}'}
+                    requests.put(f'{PY_SERVER}/kaggle_dataset/update_size', json=params)
             requests.put(f'{PY_SERVER}/kaggle_dataset/update', json=params) 
             if not quiet:
                 print('\n', end='')
