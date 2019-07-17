@@ -15,5 +15,8 @@ RUN /opt/conda/bin/pip install --upgrade pip && \
     /opt/conda/bin/pip install kaggle flask_socketio redis
 
 ADD kaggle_api_extended.py /opt/conda/lib/python3.7/site-packages/kaggle/api
+ADD api_client.py /opt/conda/lib/python3.7/site-packages/kaggle
+ADD rest.py /opt/conda/lib/python3.7/site-packages/kaggle
 RUN mkdir /root/.kaggle
 ADD kaggle.json /root/.kaggle
+
