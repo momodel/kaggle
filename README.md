@@ -1,2 +1,2 @@
 # kaggle
-这是kaggle的镜像文件
+这是 kaggle 的镜像文件
