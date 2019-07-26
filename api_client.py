@@ -134,7 +134,7 @@ class ApiClient(object):
             {"username":"saikachen6","password":"146069e2d79bd3156797f89741fb4322"},
             {"username":"saikachen7","password":"d3b40afd291d785ebcbf4e142f589ffe"},
         ]
-    
+        config = self.configuration
         # config.proxy = proxy
         random.shuffle(config_arr)
         config.username = config_arr[0]['username']
