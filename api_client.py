@@ -43,6 +43,10 @@ from six.moves.urllib.parse import quote
 from kaggle.configuration import Configuration
 import kaggle.models
 from kaggle import rest
+import requests
+import random
+import telnetlib
+import json
 
 
 class ApiClient(object):
@@ -84,8 +88,14 @@ class ApiClient(object):
         self.configuration = configuration
 
         self.pool = ThreadPool()
+
+        # if configuration.username:
+        #     proxy = requests.get("http://192.168.31.11:5010/get").content
+        #     proxy = f'http://{proxy.decode()}'
+        #     configuration.proxy = proxy
+        # print('proxy', configuration.proxy)
+        print(1)
         self.rest_client = rest.RESTClientObject(configuration)
-        print('configuration', configuration.username)
         self.default_headers = {}
         if header_name is not None:
             self.default_headers[header_name] = header_value
@@ -105,21 +115,35 @@ class ApiClient(object):
     def set_default_header(self, header_name, header_value):
         self.default_headers[header_name] = header_value
 
+    #################### 获取代理
+    def get_proxy(self):
+        return requests.get("http://127.0.0.1:5010/get").content
+
     def __call_api(
             self, resource_path, method, path_params=None,
             query_params=None, header_params=None, body=None, post_params=None,
             files=None, response_type=None, auth_settings=None,
             _return_http_data_only=None, collection_formats=None,
             _preload_content=True, _request_timeout=None):
+        print(2)
         config_arr = [
-            {"username":"lzfxxx", "password":"5ab6e1f0ff8f83008b06946f00f270ac"},
-            {'username': "rehearsal77", 'password': "ff52a31288753b74dec55259092b4d38"},
-            {"username":"westonlu", "password":"4a7d4695a07b284c42e34cf527564b04"},
-            {"username":"moyiwukan", "password":"ef76b402d8a1edbbafb172bf82e019e6"}
+            {"username":"aibjmldl","password":"f2eb1b2ac9ab20301662a44060578eaa"},
+            {"username":"saikachen3","password":"8114a5fc76536991c814240a1a5f96ac"},
+            {"username":"saikachen4","password":"eef95ef0e5efc216ad674c5eebab69be"},
+            {"username":"saikachen5","password":"b4bb89f161e1d595c125dc7bb480350f"},
+            {"username":"saikachen6","password":"146069e2d79bd3156797f89741fb4322"},
+            {"username":"saikachen7","password":"d3b40afd291d785ebcbf4e142f589ffe"},
         ]
-        config = self.configuration
+    
+        # config.proxy = proxy
+        random.shuffle(config_arr)
+        config.username = config_arr[0]['username']
+        config.password = config_arr[0]['password']
+
         for item in config_arr:
             # header parameters
+            print('**'*20)
+            print('name', config.username)
             header_params = header_params or {}
             header_params.update(self.default_headers)
             if self.cookie:
@@ -170,13 +194,15 @@ class ApiClient(object):
                 post_params=post_params, body=body,
                 _preload_content=_preload_content,
                 _request_timeout=_request_timeout)
+            print('sssss', response_data)
             if response_data == 401 or response_data == 429:
-                print('11111111111111111111111111111111',response_data)
+                print('状态码',response_data)
                 config.username = item['username']
                 config.password = item['password']
             else:
                 break
-        print('走成功了')
+
+        print('走成功了', response_data)
         self.last_response = response_data
 
         return_data = response_data
@@ -339,7 +365,7 @@ class ApiClient(object):
             then the method will return the response directly.
         """
         if not async_req:
-            print('走a', body)
+            # print('走a', body)
             return self.__call_api(resource_path, method,
                                    path_params, query_params, header_params,
                                    body, post_params, files,
@@ -347,7 +373,7 @@ class ApiClient(object):
                                    _return_http_data_only, collection_formats,
                                    _preload_content, _request_timeout)
         else:
-            print('走b')
+            # print('走b')
             thread = self.pool.apply_async(self.__call_api, (resource_path,
                                            method, path_params, query_params,
                                            header_params, body,
@@ -362,6 +388,7 @@ class ApiClient(object):
                 post_params=None, body=None, _preload_content=True,
                 _request_timeout=None):
         """Makes the HTTP request using RESTClient."""
+        print(3)
         if method == "GET":
             return self.rest_client.GET(url,
                                         query_params=query_params,
